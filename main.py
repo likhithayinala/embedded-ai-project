@@ -7,8 +7,9 @@ from faster_whisper import WhisperModel
 import time
 import pyttsx3
 import requests
-from google import genai
+import google.generativeai as genai
 import os
+from PIL import Image
 
 # Retrieve API keys from environment
 OPENWEATHER_API_KEY = "f34b5df8a4a390837dcfce87c604f68f"  # For the weather API
@@ -157,11 +158,12 @@ def get_weather_data(location):
 def get_outfit_recommendation_with_image(input_text, weather, image_path):
     """
     Sends the blurred image along with textual details (user input and weather information)
-    to the Gemini Flash 2.0 free-tier API to obtain an outfit recommendation.
+    to the Gemini Vision API to obtain an outfit recommendation.
     """
-    # Replace this URL with the actual endpoint provided by Gemini Flash 2.0 free-tier API
-    # Initialize the Gemini client with API key
-    client = genai.Client(api_key=GEMINI_FLASH_API_KEY)
+    
+    # Configure the Gemini API with the API key
+    genai.configure(api_key=GEMINI_FLASH_API_KEY)
+    model = genai.GenerativeModel(model_name="models/gemini-2.0-flash")
 
     # Construct a prompt that incorporates the spoken text and weather details
     prompt_text = (
@@ -170,23 +172,20 @@ def get_outfit_recommendation_with_image(input_text, weather, image_path):
     )
 
     try:
-        # Load image
-        image = genai.Image.from_file(image_path)
+        # Load image using PIL (Gemini expects PIL.Image)
+        image = Image.open(image_path)
+
+        print("Sending request to Gemini Vision API...")
+        response = model.generate_content([prompt_text, image])
         
-        print("Sending request to Gemini Flash API...")
-        response = client.models.generate_content(
-            model="gemini-2.0-flash", 
-            contents=[prompt_text, image]
-        )
-        
-        if response.text:
+        if hasattr(response, 'text'):
             recommendation = response.text
             print("Outfit Recommendation:", recommendation)
             return recommendation
         else:
             return "I'm sorry, I couldn't retrieve an outfit recommendation."
     except Exception as e:
-        print("Error calling Gemini Flash API:", e)
+        print("Error calling Gemini API:", e)
         return "I'm sorry, I couldn't retrieve an outfit recommendation."
 
 def text_to_speech(text):
