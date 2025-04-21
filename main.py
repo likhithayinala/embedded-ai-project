@@ -16,9 +16,16 @@ from PIL import Image
 from fine_tune import fine_tune_model
 import torch
 
-# Retrieve API keys from environment
-OPENWEATHER_API_KEY = "f34b5df8a4a390837dcfce87c604f68f"  # For the weather API
-GEMINI_FLASH_API_KEY = "AIzaSyCuGmoh6C5dZjsO0io0nWxFRqab5KsYE3w"  # For the Gemini Flash 2.0 API
+# Retrieve API keys from environment 
+# Read .txt file for API keys
+with open("data/api_keys.txt", "r") as f:
+    lines = f.readlines()
+    # Remove any leading/trailing whitespace characters
+    lines = [line.strip() for line in lines]
+    # Assign the keys to variables
+    OPENAI_API_KEY = lines[0]
+    OPENWEATHER_API_KEY = lines[1]
+    GEMINI_FLASH_API_KEY = lines[2]
 
 def keyword_detection(text, keywords):
     """
