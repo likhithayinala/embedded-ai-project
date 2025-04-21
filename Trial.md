@@ -76,7 +76,3 @@ Based on your existing wardrobe and the current weather (broken clouds, 12.37°C
 
 https://github.com/user-attachments/assets/9a583a2f-0c68-4c47-bab2-b6bc9f82d0df
 
-
-[Listen to the audio](https://gabalpha.github.io/read-audio/?p=https://github.com/likhithayinala/embedded-ai-project/blob/main/data/output.mp3)
-
-
