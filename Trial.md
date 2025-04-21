@@ -1,5 +1,6 @@
 # An Example Run of the Code for someone based in Seattle
 
+```
 Training the keyword detection model...
 Spoken output delivered
 Recording data/yes_1.wav for 1s…
@@ -38,11 +39,12 @@ Recognized Speech (offline):  Yes.
 User agreed to take a picture.
 Allowing camera to adjust...
 User image captured
-Detected 2 face(s) for blurring
+Detected 1 face(s) for blurring
 User image with blurred faces saved as data/user_image_blurred.jpg
 Retrieved weather for Seattle, Seattle.: 12.37°C, broken clouds
 Opening image for Gemini API...
 Sending request to Gemini Vision API...
+```
 Outfit Recommendation: Okay, based on your existing wardrobe and the current weather (broken clouds, 12.37°C), here's a detailed outfit recommendation:
 
 **Outfit:**
