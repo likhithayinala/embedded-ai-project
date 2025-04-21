@@ -78,3 +78,6 @@ https://github.com/user-attachments/assets/9a583a2f-0c68-4c47-bab2-b6bc9f82d0df
     Audio Output from Assistant
 </audio>
 
+[Listen to the audio](data/output.mp3)
+
+
