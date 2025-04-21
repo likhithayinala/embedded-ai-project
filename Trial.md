@@ -84,3 +84,7 @@ Final Recommendation: Okay, based on your existing wardrobe and the current weat
 
 This outfit will provide warmth and protection from the elements while maintaining a casual and comfortable style.
 Spoken output delivered
+
+<audio controls>
+  <source src="data/output.wav" type="audio/wav">
+</audio>
