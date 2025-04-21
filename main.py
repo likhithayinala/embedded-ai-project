@@ -8,6 +8,9 @@ import time
 import pyttsx3
 import requests
 import google.generativeai as genai
+from kwt.models.kwt import kwt_from_name, KWT
+import json
+import os
 import os
 from PIL import Image
 from fine_tune import fine_tune_model
@@ -68,7 +71,6 @@ def start_listening(model):
     sd.wait()  
     try:
         processed_audio = pre_process_audio (recording)
-        print(processed_audio.shape)
         logits = model(processed_audio.unsqueeze(0))  # Move to GPU if available
         probs = torch.softmax(logits, dim=-1)
         predicted_class = torch.argmax(probs, dim=-1).item()
@@ -234,17 +236,22 @@ def get_outfit_recommendation_with_image(input_text, weather, image_path):
         print("Error calling Gemini API:", e)
         return "I'm sorry, I couldn't retrieve an outfit recommendation."
 
-def text_to_speech(text):
+def text_to_speech(text, save=False):
     """
     Converts text to speech using the pyttsx3 offline engine.
     """
     engine = pyttsx3.init()
-    engine.setProperty('rate', 90)  # Speed of speech
     engine.setProperty('volume', 1.0)
     engine.setProperty('voice', 'en-uk') 
     engine.say(text)
     engine.runAndWait()
     time.sleep(1)  # Wait for the speech to finish
+    # Save the audio to a file
+    if save:
+        # Save the audio to a file
+        engine.save_to_file(text, 'data/output.mp3')
+        engine.runAndWait()
+        engine.stop()
     # Explicitly stop and dispose of the engine
     engine.stop()
     print("Spoken output delivered")
@@ -264,10 +271,52 @@ def main():
     # if trained model doesn't exist then train it
     if not os.path.exists("yesno_trained_model.pth"):
         print("Training the keyword detection model...")
+        text_to_speech("Training the keyword detection model. Please say yes 5 times and then no 5 times.")
         # Load the pre-trained model
         base_model = fine_tune_model()
+        # Ask user for city and wardrobe information
 
-    from kwt.models.kwt import kwt_from_name, KWT
+        # Define path for storing user data
+        user_data_path = "data/user_info.json"
+        os.makedirs("data", exist_ok=True)
+
+        # Initialize user data dictionary
+        user_data = {}
+
+        # Ask for city
+        text_to_speech("Please tell me which city you live in.")
+        city_response = speech_to_text_offline(model, time=5)
+        # Remove any duplicate words
+        city_response = " ".join(dict.fromkeys(city_response.split()))
+        # Check if the response is empty
+        if city_response:
+            user_data["city"] = city_response
+            print(f"Recorded city: {city_response}")
+        else:
+            user_data["city"] = "New York"
+            print("Could not record city information. Defaulting to New York.")
+
+        # Ask for wardrobe collection
+        text_to_speech("Please describe your wardrobe collection briefly.")
+        wardrobe_response = speech_to_text_offline(model, time=10)
+        if wardrobe_response:
+            user_data["wardrobe"] = wardrobe_response
+            print(f"Recorded wardrobe: {wardrobe_response}")
+        else:
+            user_data["wardrobe"] = "Unknown"
+            print("Could not record wardrobe information")
+
+        # Save to JSON file
+        with open(user_data_path, "w") as f:
+            json.dump(user_data, f, indent=2)
+        print(f"User information saved to {user_data_path}")
+
+    # Load user config 
+    with open("data/user_info.json", "r") as f:
+        user_data = json.load(f)
+    city = user_data.get("city", "Unknown")
+    wardrobe = user_data.get("wardrobe", "Unknown")
+
     cfg = {
         "input_res":[40,98],"patch_res":[40,1],"num_classes":2,
         "mlp_dim":256,"dim":64,"heads":1,"depth":12,
@@ -312,18 +361,17 @@ def main():
         print("User declined to take a picture.")
         image_path = None
     # Step 4: Extract location and get weather data
-    location = extract_location(text)
+    location = user_data["city"]
     weather = get_weather_data(location)
-    if not weather:
-        print("Weather information unavailable. Exiting.")
-        return
 
     # Step 5: Get outfit recommendation via Gemini Flash 2.0 using the blurred image
+    text = text + str(user_data["wardrobe"])
     recommendation = get_outfit_recommendation_with_image(text, weather, image_path)
     print("Final Recommendation:", recommendation)
 
     # Step 6: Output recommendation via TTS
-    text_to_speech(recommendation)
+    recommendation = recommendation.replace("*", "")
+    text_to_speech(recommendation, save=True)
 
 if __name__ == "__main__":
     main()
