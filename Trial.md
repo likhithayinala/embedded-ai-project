@@ -1,5 +1,7 @@
 # An Example Run of the Code for someone based in Seattle
 
+## Code Execution Output
+
 ```
 Training the keyword detection model...
 Spoken output delivered
@@ -45,47 +47,29 @@ Retrieved weather for Seattle, Seattle.: 12.37°C, broken clouds
 Opening image for Gemini API...
 Sending request to Gemini Vision API...
 ```
-Outfit Recommendation: Okay, based on your existing wardrobe and the current weather (broken clouds, 12.37°C), here's a detailed outfit recommendation:
+
+## Outfit Recommendation
+
+Based on your existing wardrobe and the current weather (broken clouds, 12.37°C), here's a detailed outfit recommendation:
 
 **Outfit:**
 
-*   **Base:** A comfortable t-shirt and jeans. This is a versatile starting point that can be easily layered.
-
-*   **Outer Layer:** Since the temperature is cool, go for one of your winter jackets. This will provide the necessary warmth while remaining suitable for the broken clouds. Consider choosing a jacket color that complements your t-shirt and jeans for a cohesive look.
-
-**Reasoning:**
-
-*   **Temperature:** 12.37°C is cool enough to warrant a jacket, but not so cold that you need heavy layers. Your winter jacket will offer sufficient insulation.
-*   **Weather:** Broken clouds indicate partly sunny and partly cloudy conditions. A winter jacket is suitable for both scenarios.
-*   **Your Wardrobe:** You have a casual outfit, suits, winter jackets, and t-shirts/jeans. Given that the prompt did not specify the need for formal attire, I suggest utilizing your t-shirts and jeans with the winter jacket.
-
-**Additional considerations:**
-
-*   **Footwear:** Wear appropriate shoes depending on the weather conditions. If the clouds are threatening rain, opt for water-resistant shoes. Otherwise, sneakers or casual boots would be a good choice.
-
-This outfit will provide warmth and protection from the elements while maintaining a casual and comfortable style.
-Final Recommendation: Okay, based on your existing wardrobe and the current weather (broken clouds, 12.37°C), here's a detailed outfit recommendation:
-
-**Outfit:**
-
-*   **Base:** A comfortable t-shirt and jeans. This is a versatile starting point that can be easily layered.
-
-*   **Outer Layer:** Since the temperature is cool, go for one of your winter jackets. This will provide the necessary warmth while remaining suitable for the broken clouds. Consider choosing a jacket color that complements your t-shirt and jeans for a cohesive look.
+* **Base:** A comfortable t-shirt and jeans. This is a versatile starting point that can be easily layered.
+* **Outer Layer:** Since the temperature is cool, go for one of your winter jackets. This will provide the necessary warmth while remaining suitable for the broken clouds.
 
 **Reasoning:**
 
-*   **Temperature:** 12.37°C is cool enough to warrant a jacket, but not so cold that you need heavy layers. Your winter jacket will offer sufficient insulation.
-*   **Weather:** Broken clouds indicate partly sunny and partly cloudy conditions. A winter jacket is suitable for both scenarios.
-*   **Your Wardrobe:** You have a casual outfit, suits, winter jackets, and t-shirts/jeans. Given that the prompt did not specify the need for formal attire, I suggest utilizing your t-shirts and jeans with the winter jacket.
+* **Temperature:** 12.37°C is cool enough to warrant a jacket, but not so cold that you need heavy layers.
+* **Weather:** Broken clouds indicate partly sunny and partly cloudy conditions.
+* **Your Wardrobe:** You have a casual outfit, suits, winter jackets, and t-shirts/jeans.
 
 **Additional considerations:**
 
-*   **Footwear:** Wear appropriate shoes depending on the weather conditions. If the clouds are threatening rain, opt for water-resistant shoes. Otherwise, sneakers or casual boots would be a good choice.
+* **Footwear:** Wear appropriate shoes depending on the weather conditions. If the clouds are threatening rain, opt for water-resistant shoes.
 
-This outfit will provide warmth and protection from the elements while maintaining a casual and comfortable style.
-Spoken output delivered
+## Audio Output
 
 <audio controls>
-  <source src="data/output.wav" type="audio/wav">
-  Audio Output from Assisstant 
+    <source src="data/output.wav" type="audio/wav">
+    Audio Output from Assistant
 </audio>
