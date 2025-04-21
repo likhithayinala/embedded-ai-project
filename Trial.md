@@ -70,8 +70,7 @@ Based on your existing wardrobe and the current weather (broken clouds, 12.37°C
 ## Audio Output
 
 <audio controls>
-    <source src="data/output.wav" type="audio/wav">
+    <source src="data/output.mp3" type="audio/mp3">
     Audio Output from Assistant
 </audio>
 
-![Audio]{data/output.wav}
