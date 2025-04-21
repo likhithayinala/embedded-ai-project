@@ -10,6 +10,8 @@ import requests
 import google.generativeai as genai
 import os
 from PIL import Image
+from fine_tune import fine_tune_model
+import torch
 
 # Retrieve API keys from environment
 OPENWEATHER_API_KEY = "f34b5df8a4a390837dcfce87c604f68f"  # For the weather API
@@ -25,6 +27,37 @@ def keyword_detection(text, keywords):
             return True
     return True
 
+def pre_process_audio(recording):
+    def pre_process_audio(recording):
+        """
+        Preprocesses audio recording to create a mel spectrogram.
+        Returns the processed audio features.
+        """
+        import torch.nn.functional as F
+        import torchaudio.transforms as T
+        
+        # Convert numpy array to tensor and normalize to float between -1 and 1
+        wav = torch.tensor(recording.flatten(), dtype=torch.float32) / 32768.0
+        wav = wav.unsqueeze(0)  # Add channel dimension: (1, samples)
+        
+        SAMPLE_RATE = 16000  # Using the same sample rate as in recording
+        
+        # Create mel spectrogram
+        spec = T.MelSpectrogram(
+            sample_rate=SAMPLE_RATE, n_fft=1024, win_length=640,
+            hop_length=160, n_mels=40
+        )(wav)  # (1, 40, T)
+        
+        log_mel = torch.log(spec + 1e-6)
+        
+        # Pad/crop to 98 frames
+        if log_mel.shape[-1] < 98:
+            pad = 98 - log_mel.shape[-1]
+            log_mel = F.pad(log_mel, (0, pad))
+        log_mel = log_mel[:, :, :98]
+        
+        return log_mel
+
 def start_listening(model):
     """
     Initializes the microphone and listens for speech input.
@@ -36,17 +69,14 @@ def start_listening(model):
     recording = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype='int16')
     sd.wait()  
     try:
-        # Pass the numpy array recording directly to the model
-        segments,_ = model.transcribe(recording.flatten().astype(np.float32) / 32768.0, beam_size=5)
-        text = [segment.text for segment in segments if segment.text]
-        text = " ".join(text)
-        print("Recognized Speech (offline):", text)
-        if keyword_detection(text, keywords):
-            print("Activation keyword detected.")
-            return True, text
-        else:
-            print("No activation keyword detected.")
-            return False, ""
+        processed_audio = pre_process_audio (recording)
+        logits = model(processed_audio.unsqueeze(0))  # Move to GPU if available
+        probs = torch.softmax(logits, dim=-1)
+        predicted_class = torch.argmax(probs, dim=-1).item()
+        if predicted_class == 1:  # Assuming '1' is the class for "yes"
+            print("Activation keyword detected")
+
+
     except sr.RequestError as e:
         print("Pocketsphinx error: {0}".format(e))
     except sr.WaitTimeoutError:
@@ -96,6 +126,13 @@ def capture_user_image():
         print("Camera could not be opened")
         return None
 
+    # Give camera time to adjust to lighting conditions
+    print("Allowing camera to adjust...")
+    for _ in range(10):  # Capture and discard frames to let camera adjust
+        cap.read()
+        time.sleep(0.1)  # Short delay between frames
+
+    # Now capture the actual frame we want to use
     ret, frame = cap.read()
     cap.release()
     if ret:
@@ -173,6 +210,12 @@ def get_outfit_recommendation_with_image(input_text, weather, image_path):
 
     try:
         # Load image using PIL (Gemini expects PIL.Image)
+        if image_path is None:
+            response = model.generate_content([prompt_text])
+            return response.text
+        else:
+            # Open the image using PIL
+            print("Opening image for Gemini API...")
         image = Image.open(image_path)
 
         print("Sending request to Gemini Vision API...")
@@ -193,8 +236,9 @@ def text_to_speech(text):
     Converts text to speech using the pyttsx3 offline engine.
     """
     engine = pyttsx3.init()
+    engine.setProperty('rate', 90)  # Speed of speech
     engine.setProperty('volume', 1.0)
-    engine.setProperty('voice', 'en-us') 
+    engine.setProperty('voice', 'en-uk') 
     engine.say(text)
     engine.runAndWait()
     time.sleep(1)  # Wait for the speech to finish
@@ -214,7 +258,12 @@ def main():
     """
     # Step 1: Offline speech recognition
     model = WhisperModel("small", compute_type="int8")
-
+    # if trained model doesn't exist then train it
+    if not os.path.exists("yesno_trained_model.pth"):
+        print("Training the keyword detection model...")
+        # Load the pre-trained model
+        base_model = fine_tune_model()
+    detection_model = torch.load("yesno_trained_model.pth", map_location="cpu")
     print("Listening for speech input...")
     start = False
     start_time = time.time()
@@ -239,7 +288,7 @@ def main():
         user_image = capture_user_image()
         if user_image is not None:
             user_image_blurred = blur_faces(user_image)
-            image_path = "user_image_blurred.jpg"
+            image_path = "data/user_image_blurred.jpg"
             cv2.imwrite(image_path, user_image_blurred)
             print(f"User image with blurred faces saved as {image_path}")
         else:
