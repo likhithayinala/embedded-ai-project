@@ -28,35 +28,34 @@ def keyword_detection(text, keywords):
     return True
 
 def pre_process_audio(recording):
-    def pre_process_audio(recording):
-        """
-        Preprocesses audio recording to create a mel spectrogram.
-        Returns the processed audio features.
-        """
-        import torch.nn.functional as F
-        import torchaudio.transforms as T
-        
-        # Convert numpy array to tensor and normalize to float between -1 and 1
-        wav = torch.tensor(recording.flatten(), dtype=torch.float32) / 32768.0
-        wav = wav.unsqueeze(0)  # Add channel dimension: (1, samples)
-        
-        SAMPLE_RATE = 16000  # Using the same sample rate as in recording
-        
-        # Create mel spectrogram
-        spec = T.MelSpectrogram(
-            sample_rate=SAMPLE_RATE, n_fft=1024, win_length=640,
-            hop_length=160, n_mels=40
-        )(wav)  # (1, 40, T)
-        
-        log_mel = torch.log(spec + 1e-6)
-        
-        # Pad/crop to 98 frames
-        if log_mel.shape[-1] < 98:
-            pad = 98 - log_mel.shape[-1]
-            log_mel = F.pad(log_mel, (0, pad))
-        log_mel = log_mel[:, :, :98]
-        
-        return log_mel
+    """
+    Preprocesses audio recording to create a mel spectrogram.
+    Returns the processed audio features.
+    """
+    import torch.nn.functional as F
+    import torchaudio.transforms as T
+    
+    # Convert numpy array to tensor and normalize to float between -1 and 1
+    wav = torch.tensor(recording.flatten(), dtype=torch.float32) / 32768.0
+    wav = wav.unsqueeze(0)  # Add channel dimension: (1, samples)
+    
+    SAMPLE_RATE = 16000  # Using the same sample rate as in recording
+    
+    # Create mel spectrogram
+    spec = T.MelSpectrogram(
+        sample_rate=SAMPLE_RATE, n_fft=1024, win_length=640,
+        hop_length=160, n_mels=40
+    )(wav)  # (1, 40, T)
+    
+    log_mel = torch.log(spec + 1e-6)
+    
+    # Pad/crop to 98 frames
+    if log_mel.shape[-1] < 98:
+        pad = 98 - log_mel.shape[-1]
+        log_mel = F.pad(log_mel, (0, pad))
+    log_mel = log_mel[:, :, :98]
+    
+    return log_mel
 
 def start_listening(model):
     """
@@ -65,16 +64,17 @@ def start_listening(model):
     """
     duration = 2  # 2 seconds of recording
     fs = 16000  # 16kHz sampling rate
-    keywords = ["weather", "outfit", "recommendation", "fashion", "start"]
     recording = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype='int16')
     sd.wait()  
     try:
         processed_audio = pre_process_audio (recording)
+        print(processed_audio.shape)
         logits = model(processed_audio.unsqueeze(0))  # Move to GPU if available
         probs = torch.softmax(logits, dim=-1)
         predicted_class = torch.argmax(probs, dim=-1).item()
         if predicted_class == 1:  # Assuming '1' is the class for "yes"
             print("Activation keyword detected")
+        return True
 
 
     except sr.RequestError as e:
@@ -137,7 +137,10 @@ def capture_user_image():
     cap.release()
     if ret:
         print("User image captured")
+        # Save the image to a file 
+        cv2.imwrite("data/user_image.jpg", frame)
         return frame
+
     else:
         print("Failed to capture image")
         return None
@@ -263,12 +266,23 @@ def main():
         print("Training the keyword detection model...")
         # Load the pre-trained model
         base_model = fine_tune_model()
-    detection_model = torch.load("yesno_trained_model.pth", map_location="cpu")
+
+    from kwt.models.kwt import kwt_from_name, KWT
+    cfg = {
+        "input_res":[40,98],"patch_res":[40,1],"num_classes":2,
+        "mlp_dim":256,"dim":64,"heads":1,"depth":12,
+        "dropout":0.0,"emb_dropout":0.1,"pre_norm":False
+    }
+    detection_model = KWT(**cfg)
+    detection_model_weights = torch.load("yesno_trained_model.pth", map_location="cpu")
+    detection_model.load_state_dict(detection_model_weights, strict=False)
+    detection_model.eval()
+
     print("Listening for speech input...")
     start = False
     start_time = time.time()
     while not start and time.time() - start_time < 40:
-        start, input_text = start_listening(model)
+        start = start_listening(detection_model)
         if not start:
             print("No activation keyword detected. Listening again...")
             time.sleep(1)
@@ -298,14 +312,14 @@ def main():
         print("User declined to take a picture.")
         image_path = None
     # Step 4: Extract location and get weather data
-    location = extract_location(input_text)
+    location = extract_location(text)
     weather = get_weather_data(location)
     if not weather:
         print("Weather information unavailable. Exiting.")
         return
 
     # Step 5: Get outfit recommendation via Gemini Flash 2.0 using the blurred image
-    recommendation = get_outfit_recommendation_with_image(input_text, weather, image_path)
+    recommendation = get_outfit_recommendation_with_image(text, weather, image_path)
     print("Final Recommendation:", recommendation)
 
     # Step 6: Output recommendation via TTS

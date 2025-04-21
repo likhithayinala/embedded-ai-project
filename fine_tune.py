@@ -8,7 +8,7 @@ SAMPLE_RATE = 16000
 DURATION = 1  # seconds
 
 
-def fine_tune():
+def fine_tune_model():
     # Record audio samples
     def record_clip(filename):
         print(f"Recording {filename} for {DURATION}s…")
