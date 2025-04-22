@@ -1,1 +1,1 @@
-Building a smart mirror powered by Raspberri Pi! Work in Progress. Please check out our mid Project report for updates!
+Building a smart mirror powered by Raspberri Pi! Work in Progress. Please check out our [Mid Project Report](https://github.com/likhithayinala/embedded-ai-project/blob/main/Mid%20Project%20Report.pdf) for updates!
