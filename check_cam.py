@@ -1,7 +1,15 @@
 import cv2
 
+camera_name = ! libcamera-hello --list-cameras | grep -Po '(?<=\().+(?=\))'
+pipeline = (
+    f"libcamerasrc camera-name={camera_name[0]} "
+    "! video/x-raw, width=640, height=480, framerate=30/1, format=RGBx "
+    "! videoconvert ! video/x-raw, format=BGR ! appsink"
+)
+cap = cv2.VideoCapture(pipeline, cv2.CAP_GSTREAMER)
+
 # capture video from the first camera (index 0)
-cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture(0)
 
 # check if the camera opened successfully
 if not cap.isOpened():
