@@ -1,4 +1,4 @@
-
+from picamera2 import Picamera2
 import cv2
 import numpy as np
 import speech_recognition as sr
@@ -130,20 +130,27 @@ def capture_user_image():
     Captures a single frame from the default camera.
     Returns the image (in BGR format) if successful.
     """
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        print("Camera could not be opened")
-        return None
+
+    picam2 = Picamera2()
+    picam2.configure(picam2.create_video_configuration(
+        main={"size": (640, 480), "format": "XRGB8888"}
+    ))
+    picam2.start()
+    # cap = cv2.VideoCapture(0)
+    # if not cap.isOpened():
+    #     print("Camera could not be opened")
+    #     return None
 
     # Give camera time to adjust to lighting conditions
     print("Allowing camera to adjust...")
     for _ in range(10):  # Capture and discard frames to let camera adjust
-        cap.read()
+        # cap.read()
         time.sleep(0.1)  # Short delay between frames
-
+    
     # Now capture the actual frame we want to use
-    ret, frame = cap.read()
-    cap.release()
+    # ret, frame = cap.read()
+    frame = picam2.capture_array()
+    # cap.release()
     if ret:
         print("User image captured")
         # Save the image to a file 
