@@ -1,5 +1,6 @@
 from picamera2 import Picamera2
 import cv2
+from audio import ESP32Recorder
 import numpy as np
 import speech_recognition as sr
 import sounddevice as sd
@@ -23,9 +24,8 @@ with open("data/api_keys.txt", "r") as f:
     # Remove any leading/trailing whitespace characters
     lines = [line.strip() for line in lines]
     # Assign the keys to variables
-    OPENAI_API_KEY = lines[0]
-    OPENWEATHER_API_KEY = lines[1]
-    GEMINI_FLASH_API_KEY = lines[2]
+    OPENWEATHER_API_KEY = lines[0]
+    GEMINI_FLASH_API_KEY = lines[1]
 
 def keyword_detection(text, keywords):
     """
@@ -67,14 +67,14 @@ def pre_process_audio(recording):
     
     return log_mel
 
-def start_listening(model):
+def start_listening(model,rec):
     """
     Initializes the microphone and listens for speech input.
     Returns the recognized text.
     """
     duration = 2  # 2 seconds of recording
     fs = 16000  # 16kHz sampling rate
-    recording = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype='int16')
+    recording = rec.record_chunk(duration)
     sd.wait()  
     try:
         processed_audio = pre_process_audio (recording)
@@ -96,7 +96,7 @@ def start_listening(model):
         print("Pocketsphinx error: {0}".format(e))
     return ""
 
-def speech_to_text_offline(model,time=5):
+def speech_to_text_offline(model,rec,time=5):
     """
     Listens for speech input via the microphone and performs offline speech recognition
     using pocketsphinx. Returns the recognized text.
@@ -104,7 +104,7 @@ def speech_to_text_offline(model,time=5):
     # Define duration (in seconds) and sampling frequency
     duration = time  # 2 seconds of recording
     fs = 16000  # 16kHz sampling rate
-    recording = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype='int16')
+    recording = rec.record_chunk(duration)
     sd.wait()  
     try:
         # Pass the numpy array recording directly to the model
@@ -151,7 +151,7 @@ def capture_user_image():
     # ret, frame = cap.read()
     frame = picam2.capture_array()
     # cap.release()
-    if ret:
+    if frame.any():
         print("User image captured")
         # Save the image to a file 
         cv2.imwrite("data/user_image.jpg", frame)
@@ -282,12 +282,15 @@ def main():
     """
     # Step 1: Offline speech recognition
     model = WhisperModel("small", compute_type="int8")
+    # Step 2: Audio Recorder 
+    rec = ESP32Recorder('/dev/ttyACM0', 115200)
+
     # if trained model doesn't exist then train it
     if not os.path.exists("yesno_trained_model.pth"):
         print("Training the keyword detection model...")
         text_to_speech("Training the keyword detection model. Please say yes 5 times and then no 5 times.")
         # Load the pre-trained model
-        base_model = fine_tune_model()
+        base_model = fine_tune_model(rec)
         # Ask user for city and wardrobe information
 
         # Define path for storing user data
@@ -299,7 +302,7 @@ def main():
 
         # Ask for city
         text_to_speech("Please tell me which city you live in.")
-        city_response = speech_to_text_offline(model, time=5)
+        city_response = speech_to_text_offline(model, rec, time=5)
         # Remove any duplicate words
         city_response = " ".join(dict.fromkeys(city_response.split()))
         # Check if the response is empty
@@ -312,7 +315,7 @@ def main():
 
         # Ask for wardrobe collection
         text_to_speech("Please describe your wardrobe collection briefly.")
-        wardrobe_response = speech_to_text_offline(model, time=10)
+        wardrobe_response = speech_to_text_offline(model,rec, time=10)
         if wardrobe_response:
             user_data["wardrobe"] = wardrobe_response
             print(f"Recorded wardrobe: {wardrobe_response}")
@@ -345,7 +348,7 @@ def main():
     start = False
     start_time = time.time()
     while not start and time.time() - start_time < 40:
-        start = start_listening(detection_model)
+        start = start_listening(detection_model,rec)
         if not start:
             print("No activation keyword detected. Listening again...")
             time.sleep(1)
@@ -354,11 +357,11 @@ def main():
         print("40 seconds elapsed with no activation. Exiting.")
         return
     print("Started Listening to User's voice")
-    text = speech_to_text_offline(model,time=10)
+    text =  speech_to_text_offline(model,rec,time=6)
     print("Recognized Speech (offline):", text)
     # Ask user if they want to take a picture
     text_to_speech("Could I take a picture of you? Please say yes or no.")
-    user_response = speech_to_text_offline(model,time=1)
+    user_response = speech_to_text_offline(model,rec,time=3)
     if "yes" in user_response.lower():
         print("User agreed to take a picture.")
         # Step 3: Capture image and blur faces
@@ -385,7 +388,8 @@ def main():
 
     # Step 6: Output recommendation via TTS
     recommendation = recommendation.replace("*", "")
-    text_to_speech(recommendation, save=True)
+    text_to_speech(recommendation, save=False)
+    rec.close()
 
 if __name__ == "__main__":
     main()

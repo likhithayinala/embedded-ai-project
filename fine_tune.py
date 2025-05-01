@@ -8,11 +8,11 @@ SAMPLE_RATE = 16000
 DURATION = 1  # seconds
 
 
-def fine_tune_model():
+def fine_tune_model(rec):
     # Record audio samples
     def record_clip(filename):
         print(f"Recording {filename} for {DURATION}s…")
-        clip = sd.rec(int(DURATION * SAMPLE_RATE), samplerate=SAMPLE_RATE, channels=1)  # sounddevice rec
+        clip = rec.record_chunk(int(DURATION))  # sounddevice rec
         sd.wait()  # wait until recording is done
         sf.write(filename, clip, SAMPLE_RATE)
 
