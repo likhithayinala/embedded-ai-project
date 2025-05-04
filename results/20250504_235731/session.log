@@ -1,0 +1,30 @@
+2025-05-04 23:57:31,858 - INFO - Session started. Results will be saved to: results/20250504_235731
+2025-05-04 23:57:35,738 - INFO - Listening for speech input...
+2025-05-04 23:57:38,205 - INFO - Started Listening to User's voice
+2025-05-04 23:57:40,901 - INFO - Spoken output delivered
+2025-05-04 23:57:47,595 - INFO - Processing audio with duration 00:06.000
+2025-05-04 23:57:52,373 - INFO - Detected language 'en' with probability 0.83
+2025-05-04 23:58:00,766 - INFO - Recognized Speech (offline):  I'm going for a date night fine dining place tonight. I want outfit recommendations
+2025-05-04 23:58:00,767 - INFO - Recognized Speech (offline):  I'm going for a date night fine dining place tonight. I want outfit recommendations
+2025-05-04 23:58:04,221 - INFO - Spoken output delivered
+2025-05-04 23:58:06,412 - INFO - Processing audio with duration 00:02.000
+2025-05-04 23:58:11,124 - INFO - Detected language 'en' with probability 0.83
+2025-05-04 23:58:16,550 - INFO - Recognized Speech (offline):  Yes.
+2025-05-04 23:58:16,551 - INFO - User agreed to take a picture.
+2025-05-04 23:58:16,569 - INFO - Initialization successful.
+2025-05-04 23:58:16,569 - INFO - Camera now open.
+2025-05-04 23:58:16,572 - INFO - Camera configuration has been adjusted!
+2025-05-04 23:58:16,572 - INFO - Configuration successful!
+2025-05-04 23:58:16,722 - INFO - Camera started
+2025-05-04 23:58:16,723 - INFO - Allowing camera to adjust...
+2025-05-04 23:58:17,725 - INFO - User image captured
+2025-05-04 23:58:17,812 - INFO - Detected 1 face(s) for blurring
+2025-05-04 23:58:17,826 - INFO - User image with blurred faces saved as results/20250504_235731/user_image_blurred.jpg
+2025-05-04 23:58:17,853 - INFO - Retrieved weather for New York: 17.33°C, light rain
+2025-05-04 23:58:17,854 - INFO - Opening image for Gemini API...
+2025-05-04 23:58:17,861 - INFO - Sending request to Gemini Vision API...
+2025-05-04 23:58:19,289 - INFO - Outfit Recommendation: For a fine dining date night, opt for the blue pants. Pair them with a button-down shirt and a blazer. For the weather, layer with a light jacket. Ditch the sweatsuits and sportswear for this occasion.
+2025-05-04 23:58:19,290 - INFO - Final Recommendation: For a fine dining date night, opt for the blue pants. Pair them with a button-down shirt and a blazer. For the weather, layer with a light jacket. Ditch the sweatsuits and sportswear for this occasion.
+2025-05-04 23:58:20,834 - INFO - Spoken output delivered
+2025-05-04 23:58:20,889 - INFO - Camera stopped
+2025-05-04 23:58:21,092 - INFO - Camera closed successfully.

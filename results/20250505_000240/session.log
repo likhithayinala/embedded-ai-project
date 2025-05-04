@@ -1,0 +1,31 @@
+2025-05-05 00:02:40,514 - INFO - Session started. Results will be saved to: results/20250505_000240
+2025-05-05 00:02:44,394 - INFO - Listening for speech input...
+2025-05-05 00:02:46,825 - INFO - Activation keyword detected
+2025-05-05 00:02:46,826 - INFO - Started Listening to User's voice
+2025-05-05 00:02:49,515 - INFO - Spoken output delivered
+2025-05-05 00:02:56,179 - INFO - Processing audio with duration 00:06.000
+2025-05-05 00:03:00,890 - INFO - Detected language 'en' with probability 0.95
+2025-05-05 00:03:09,187 - INFO - Recognized Speech (offline):  So I will be going for a date to a fine-dining place. I want some recommendations.
+2025-05-05 00:03:09,187 - INFO - Recognized Speech (offline):  So I will be going for a date to a fine-dining place. I want some recommendations.
+2025-05-05 00:03:12,644 - INFO - Spoken output delivered
+2025-05-05 00:03:14,858 - INFO - Processing audio with duration 00:02.000
+2025-05-05 00:03:19,909 - INFO - Detected language 'en' with probability 0.75
+2025-05-05 00:03:25,246 - INFO - Recognized Speech (offline):  Yes.
+2025-05-05 00:03:25,246 - INFO - User agreed to take a picture.
+2025-05-05 00:03:25,265 - INFO - Initialization successful.
+2025-05-05 00:03:25,265 - INFO - Camera now open.
+2025-05-05 00:03:25,267 - INFO - Camera configuration has been adjusted!
+2025-05-05 00:03:25,268 - INFO - Configuration successful!
+2025-05-05 00:03:25,416 - INFO - Camera started
+2025-05-05 00:03:25,417 - INFO - Allowing camera to adjust...
+2025-05-05 00:03:26,419 - INFO - User image captured
+2025-05-05 00:03:26,509 - INFO - Detected 1 face(s) for blurring
+2025-05-05 00:03:26,523 - INFO - User image with blurred faces saved as results/20250505_000240/user_image_blurred.jpg
+2025-05-05 00:03:26,591 - INFO - Retrieved weather for New York: 17.3°C, moderate rain
+2025-05-05 00:03:26,591 - INFO - Opening image for Gemini API...
+2025-05-05 00:03:26,598 - INFO - Sending request to Gemini Vision API...
+2025-05-05 00:03:27,857 - INFO - Outfit Recommendation: For a fine-dining date in moderate rain, choose the blue pants paired with a blue sweatshirt. Layer a light, neutral-colored jacket or blazer. This provides warmth and style. Avoid sportswear or tracksuits, which are too casual for the occasion.
+2025-05-05 00:03:27,857 - INFO - Final Recommendation: For a fine-dining date in moderate rain, choose the blue pants paired with a blue sweatshirt. Layer a light, neutral-colored jacket or blazer. This provides warmth and style. Avoid sportswear or tracksuits, which are too casual for the occasion.
+2025-05-05 00:03:42,980 - INFO - Spoken output delivered
+2025-05-05 00:03:43,047 - INFO - Camera stopped
+2025-05-05 00:03:43,249 - INFO - Camera closed successfully.

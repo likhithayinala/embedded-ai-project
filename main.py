@@ -12,10 +12,49 @@ import google.generativeai as genai
 from kwt.models.kwt import kwt_from_name, KWT
 import json
 import os
-import os
+import datetime
+import logging
 from PIL import Image
 from fine_tune import fine_tune_model
 import torch
+
+def setup_results_directory():
+    """
+    Creates a results directory with a timestamp-based subfolder for the current run.
+    Returns the path to the current run directory.
+    """
+    # Create results directory if it doesn't exist
+    os.makedirs("results", exist_ok=True)
+    
+    # Create a timestamped folder for this run
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_dir = os.path.join("results", timestamp)
+    os.makedirs(run_dir, exist_ok=True)
+    
+    return run_dir
+
+def setup_logging(run_dir):
+    """
+    Sets up logging to save all console output to a log file.
+    """
+    log_file = os.path.join(run_dir, "session.log")
+    
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler()  # Also output to console
+        ]
+    )
+    
+    return logging.getLogger()
+
+# Set up results directory and logging
+run_dir = setup_results_directory()
+logger = setup_logging(run_dir)
+logger.info(f"Session started. Results will be saved to: {run_dir}")
 
 # Retrieve API keys from environment 
 # Read .txt file for API keys
@@ -67,7 +106,7 @@ def pre_process_audio(recording):
     
     return log_mel
 
-def start_listening(model,rec):
+def start_listening(model, rec):
     """
     Initializes the microphone and listens for speech input.
     Returns the recognized text.
@@ -77,26 +116,25 @@ def start_listening(model,rec):
     recording = rec.record_chunk(duration)
     sd.wait()  
     try:
-        processed_audio = pre_process_audio (recording)
+        processed_audio = pre_process_audio(recording)
         logits = model(processed_audio.unsqueeze(0))  # Move to GPU if available
         probs = torch.softmax(logits, dim=-1)
         predicted_class = torch.argmax(probs, dim=-1).item()
         if predicted_class == 1:  # Assuming '1' is the class for "yes"
-            print("Activation keyword detected")
+            logger.info("Activation keyword detected")
         return True
 
-
     except sr.RequestError as e:
-        print("Pocketsphinx error: {0}".format(e))
+        logger.error(f"Pocketsphinx error: {e}")
     except sr.WaitTimeoutError:
-        print("Listening timed out while waiting for phrase to start")
+        logger.error("Listening timed out while waiting for phrase to start")
     except sr.UnknownValueError:
-        print("Pocketsphinx could not understand audio")
+        logger.error("Pocketsphinx could not understand audio")
     except sr.RequestError as e:
-        print("Pocketsphinx error: {0}".format(e))
+        logger.error(f"Pocketsphinx error: {e}")
     return ""
 
-def speech_to_text_offline(model,rec,time=5):
+def speech_to_text_offline(model, rec, time=5):
     """
     Listens for speech input via the microphone and performs offline speech recognition
     using pocketsphinx. Returns the recognized text.
@@ -108,57 +146,49 @@ def speech_to_text_offline(model,rec,time=5):
     sd.wait()  
     try:
         # Pass the numpy array recording directly to the model
-        segments,_ = model.transcribe(recording.flatten().astype(np.float32) / 32768.0, beam_size=5)
+        segments, _ = model.transcribe(recording.flatten().astype(np.float32) / 32768.0, beam_size=5)
         text = [segment.text for segment in segments if segment.text]
         text = " ".join(text)
-        print("Recognized Speech (offline):", text)
+        logger.info(f"Recognized Speech (offline): {text}")
         return text
     except sr.RequestError as e:
-        print("Pocketsphinx error: {0}".format(e))
+        logger.error(f"Pocketsphinx error: {e}")
     except sr.WaitTimeoutError:
-        print("Listening timed out while waiting for phrase to start")
+        logger.error("Listening timed out while waiting for phrase to start")
     except sr.UnknownValueError:
-        print("Pocketsphinx could not understand audio")
+        logger.error("Pocketsphinx could not understand audio")
     except sr.RequestError as e:
-        print("Pocketsphinx error: {0}".format(e))
+        logger.error(f"Pocketsphinx error: {e}")
     return ""
-
-
 
 def capture_user_image():
     """
     Captures a single frame from the default camera.
     Returns the image (in BGR format) if successful.
     """
-
     picam2 = Picamera2()
     picam2.configure(picam2.create_video_configuration(
         main={"size": (640, 480), "format": "XRGB8888"}
     ))
     picam2.start()
-    # cap = cv2.VideoCapture(0)
-    # if not cap.isOpened():
-    #     print("Camera could not be opened")
-    #     return None
-
+    
     # Give camera time to adjust to lighting conditions
-    print("Allowing camera to adjust...")
+    logger.info("Allowing camera to adjust...")
     for _ in range(10):  # Capture and discard frames to let camera adjust
-        # cap.read()
         time.sleep(0.1)  # Short delay between frames
     
     # Now capture the actual frame we want to use
-    # ret, frame = cap.read()
     frame = picam2.capture_array()
-    # cap.release()
+    # Rotate the image 90 degrees clockwise
+    frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
     if frame.any():
-        print("User image captured")
-        # Save the image to a file 
-        cv2.imwrite("data/user_image.jpg", frame)
+        logger.info("User image captured")
+        # Save the image to the run directory
+        image_path = os.path.join(run_dir, "user_image.jpg")
+        cv2.imwrite(image_path, frame)
         return frame
-
     else:
-        print("Failed to capture image")
+        logger.error("Failed to capture image")
         return None
 
 def blur_faces(image):
@@ -170,7 +200,7 @@ def blur_faces(image):
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
-    print(f"Detected {len(faces)} face(s) for blurring")
+    logger.info(f"Detected {len(faces)} face(s) for blurring")
     
     for (x, y, w, h) in faces:
         face_region = image[y:y+h, x:x+w]
@@ -189,9 +219,9 @@ def extract_location(text):
         idx = tokens.index("in")
         if idx + 1 < len(tokens):
             location = tokens[idx+1].strip(",.?!")
-            print("Extracted location:", location)
+            logger.info(f"Extracted location: {location}")
             return location
-    print("No location found in input. Defaulting to New York.")
+    logger.info("No location found in input. Defaulting to New York.")
     return "New York"
 
 def get_weather_data(location):
@@ -205,10 +235,10 @@ def get_weather_data(location):
         data = response.json()
         temp = data['main']['temp']
         description = data['weather'][0]['description']
-        print(f"Retrieved weather for {location}: {temp}°C, {description}")
+        logger.info(f"Retrieved weather for {location}: {temp}°C, {description}")
         return {"temperature": temp, "description": description}
     else:
-        print("Weather API error:", response.status_code)
+        logger.error(f"Weather API error: {response.status_code}")
         return None
 
 def get_outfit_recommendation_with_image(input_text, weather, image_path):
@@ -223,8 +253,9 @@ def get_outfit_recommendation_with_image(input_text, weather, image_path):
 
     # Construct a prompt that incorporates the spoken text and weather details
     prompt_text = (
+        f"You are a fashion assistant. Your job is to help me pick a good outfits for the day. I am going to provide the speech and the image. Based on both give me a suggestion. Do not exceed 50 words. "
         f"User speech: '{input_text}'. The current weather is {weather['description']} with "
-        f"a temperature of {weather['temperature']}°C. Based on the attached image, please provide a detailed outfit recommendation."
+        f"a temperature of {weather['temperature']}°C. Based on the attached image, please provide a detailed outfit recommendation. Follow the instructions carefully."
     )
 
     try:
@@ -234,41 +265,47 @@ def get_outfit_recommendation_with_image(input_text, weather, image_path):
             return response.text
         else:
             # Open the image using PIL
-            print("Opening image for Gemini API...")
+            logger.info("Opening image for Gemini API...")
         image = Image.open(image_path)
 
-        print("Sending request to Gemini Vision API...")
+        logger.info("Sending request to Gemini Vision API...")
         response = model.generate_content([prompt_text, image])
         
         if hasattr(response, 'text'):
             recommendation = response.text
-            print("Outfit Recommendation:", recommendation)
+            logger.info(f"Outfit Recommendation: {recommendation}")
             return recommendation
         else:
             return "I'm sorry, I couldn't retrieve an outfit recommendation."
     except Exception as e:
-        print("Error calling Gemini API:", e)
+        logger.error(f"Error calling Gemini API: {e}")
         return "I'm sorry, I couldn't retrieve an outfit recommendation."
 
 def text_to_speech(text, save=False):
     """
     Converts text to speech using the pyttsx3 offline engine.
     """
-    engine = pyttsx3.init()
-    engine.setProperty('volume', 1.0)
-    engine.setProperty('voice', 'en-uk') 
-    engine.say(text)
-    engine.runAndWait()
-    time.sleep(1)  # Wait for the speech to finish
+    if not save: 
+        engine = pyttsx3.init()
+        engine.setProperty('volume', 1.0)
+        engine.setProperty('voice', 'en-uk') 
+        engine.say(text)
+        engine.runAndWait()
+        time.sleep(1)  # Wait for the speech to finish
     # Save the audio to a file
     if save:
         # Save the audio to a file
-        engine.save_to_file(text, 'data/output.mp3')
+        output_path = os.path.join(run_dir, "output.mp3")
+        engine = pyttsx3.init()
+        engine.setProperty('volume', 1.0)
+        engine.setProperty('voice', 'en-uk') 
+        engine.say(text)
+        engine.save_to_file(text, output_path)
         engine.runAndWait()
         engine.stop()
     # Explicitly stop and dispose of the engine
     engine.stop()
-    print("Spoken output delivered")
+    logger.info("Spoken output delivered")
 
 def main():
     """
@@ -287,50 +324,59 @@ def main():
 
     # if trained model doesn't exist then train it
     if not os.path.exists("yesno_trained_model.pth"):
-        print("Training the keyword detection model...")
+        logger.info("Training the keyword detection model...")
         text_to_speech("Training the keyword detection model. Please say yes 5 times and then no 5 times.")
         # Load the pre-trained model
         base_model = fine_tune_model(rec)
         # Ask user for city and wardrobe information
 
         # Define path for storing user data
-        user_data_path = "data/user_info.json"
-        os.makedirs("data", exist_ok=True)
+        user_data_path = os.path.join(run_dir, "user_info.json")
 
         # Initialize user data dictionary
         user_data = {}
 
         # Ask for city
         text_to_speech("Please tell me which city you live in.")
-        city_response = speech_to_text_offline(model, rec, time=5)
+        city_response = speech_to_text_offline(model, rec, time=2)
         # Remove any duplicate words
         city_response = " ".join(dict.fromkeys(city_response.split()))
         # Check if the response is empty
         if city_response:
             user_data["city"] = city_response
-            print(f"Recorded city: {city_response}")
+            logger.info(f"Recorded city: {city_response}")
         else:
             user_data["city"] = "New York"
-            print("Could not record city information. Defaulting to New York.")
+            logger.info("Could not record city information. Defaulting to New York.")
 
         # Ask for wardrobe collection
         text_to_speech("Please describe your wardrobe collection briefly.")
-        wardrobe_response = speech_to_text_offline(model,rec, time=10)
+        wardrobe_response = speech_to_text_offline(model, rec, time=25)
         if wardrobe_response:
             user_data["wardrobe"] = wardrobe_response
-            print(f"Recorded wardrobe: {wardrobe_response}")
+            logger.info(f"Recorded wardrobe: {wardrobe_response}")
         else:
             user_data["wardrobe"] = "Unknown"
-            print("Could not record wardrobe information")
+            logger.info("Could not record wardrobe information")
 
         # Save to JSON file
         with open(user_data_path, "w") as f:
             json.dump(user_data, f, indent=2)
-        print(f"User information saved to {user_data_path}")
+        logger.info(f"User information saved to {user_data_path}")
+    else:
+        # Load existing user data
+        try:
+            user_data_path = "data/user_info.json"  # Try to load from original location
+            with open(user_data_path, "r") as f:
+                user_data = json.load(f)
+            # Copy the user data to the current run directory
+            new_user_data_path = os.path.join(run_dir, "user_info.json")
+            with open(new_user_data_path, "w") as f:
+                json.dump(user_data, f, indent=2)
+        except FileNotFoundError:
+            logger.error("User data file not found. Creating default values.")
+            user_data = {"city": "New York", "wardrobe": "Unknown"}
 
-    # Load user config 
-    with open("data/user_info.json", "r") as f:
-        user_data = json.load(f)
     city = user_data.get("city", "Unknown")
     wardrobe = user_data.get("wardrobe", "Unknown")
 
@@ -344,38 +390,39 @@ def main():
     detection_model.load_state_dict(detection_model_weights, strict=False)
     detection_model.eval()
 
-    print("Listening for speech input...")
+    logger.info("Listening for speech input...")
     start = False
     start_time = time.time()
     while not start and time.time() - start_time < 40:
-        start = start_listening(detection_model,rec)
+        start = start_listening(detection_model, rec)
         if not start:
-            print("No activation keyword detected. Listening again...")
+            logger.info("No activation keyword detected. Listening again...")
             time.sleep(1)
 
     if not start:
-        print("40 seconds elapsed with no activation. Exiting.")
+        logger.info("40 seconds elapsed with no activation. Exiting.")
         return
-    print("Started Listening to User's voice")
-    text =  speech_to_text_offline(model,rec,time=6)
-    print("Recognized Speech (offline):", text)
+    logger.info("Started Listening to User's voice")
+    text_to_speech("Hello! How can I help you today?")
+    text = speech_to_text_offline(model, rec, time=6)
+    logger.info(f"Recognized Speech (offline): {text}")
     # Ask user if they want to take a picture
     text_to_speech("Could I take a picture of you? Please say yes or no.")
-    user_response = speech_to_text_offline(model,rec,time=3)
+    user_response = speech_to_text_offline(model, rec, time=2)
     if "yes" in user_response.lower():
-        print("User agreed to take a picture.")
+        logger.info("User agreed to take a picture.")
         # Step 3: Capture image and blur faces
         user_image = capture_user_image()
         if user_image is not None:
             user_image_blurred = blur_faces(user_image)
-            image_path = "data/user_image_blurred.jpg"
+            image_path = os.path.join(run_dir, "user_image_blurred.jpg")
             cv2.imwrite(image_path, user_image_blurred)
-            print(f"User image with blurred faces saved as {image_path}")
+            logger.info(f"User image with blurred faces saved as {image_path}")
         else:
-            print("Skipping image processing due to capture error.")
+            logger.error("Skipping image processing due to capture error.")
             return
     else:
-        print("User declined to take a picture.")
+        logger.info("User declined to take a picture.")
         image_path = None
     # Step 4: Extract location and get weather data
     location = user_data["city"]
@@ -384,11 +431,11 @@ def main():
     # Step 5: Get outfit recommendation via Gemini Flash 2.0 using the blurred image
     text = text + str(user_data["wardrobe"])
     recommendation = get_outfit_recommendation_with_image(text, weather, image_path)
-    print("Final Recommendation:", recommendation)
+    logger.info(f"Final Recommendation: {recommendation}")
 
     # Step 6: Output recommendation via TTS
     recommendation = recommendation.replace("*", "")
-    text_to_speech(recommendation, save=False)
+    text_to_speech(recommendation, save=True)
     rec.close()
 
 if __name__ == "__main__":

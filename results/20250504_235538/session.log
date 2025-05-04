@@ -1,0 +1,29 @@
+2025-05-04 23:55:38,579 - INFO - Session started. Results will be saved to: results/20250504_235538
+2025-05-04 23:55:42,278 - INFO - Listening for speech input...
+2025-05-04 23:55:44,714 - INFO - Started Listening to User's voice
+2025-05-04 23:55:47,406 - INFO - Spoken output delivered
+2025-05-04 23:55:54,098 - INFO - Processing audio with duration 00:06.000
+2025-05-04 23:55:58,814 - INFO - Detected language 'en' with probability 0.91
+2025-05-04 23:56:07,663 - INFO - Recognized Speech (offline):  So I am going for a date night dinner in a funny place. I want some outfit recommended.
+2025-05-04 23:56:07,664 - INFO - Recognized Speech (offline):  So I am going for a date night dinner in a funny place. I want some outfit recommended.
+2025-05-04 23:56:11,119 - INFO - Spoken output delivered
+2025-05-04 23:56:13,319 - INFO - Processing audio with duration 00:02.000
+2025-05-04 23:56:17,857 - INFO - Detected language 'en' with probability 0.68
+2025-05-04 23:56:23,289 - INFO - Recognized Speech (offline):  Yes
+2025-05-04 23:56:23,290 - INFO - User agreed to take a picture.
+2025-05-04 23:56:23,308 - INFO - Initialization successful.
+2025-05-04 23:56:23,308 - INFO - Camera now open.
+2025-05-04 23:56:23,310 - INFO - Camera configuration has been adjusted!
+2025-05-04 23:56:23,311 - INFO - Configuration successful!
+2025-05-04 23:56:23,460 - INFO - Camera started
+2025-05-04 23:56:23,461 - INFO - Allowing camera to adjust...
+2025-05-04 23:56:24,466 - INFO - User image captured
+2025-05-04 23:56:24,556 - INFO - Detected 1 face(s) for blurring
+2025-05-04 23:56:24,572 - INFO - User image with blurred faces saved as results/20250504_235538/user_image_blurred.jpg
+2025-05-04 23:56:24,696 - INFO - Retrieved weather for New York: 17.33°C, light rain
+2025-05-04 23:56:24,696 - INFO - Opening image for Gemini API...
+2025-05-04 23:56:24,703 - INFO - Sending request to Gemini Vision API...
+2025-05-04 23:56:26,016 - INFO - Outfit Recommendation: For a funny date night dinner with light rain, pair your blue pants with a blue sweatshirt for a casual, coordinated look. Add some white sneakers and a light jacket. Stay warm and dry.
+2025-05-04 23:56:26,016 - INFO - Final Recommendation: For a funny date night dinner with light rain, pair your blue pants with a blue sweatshirt for a casual, coordinated look. Add some white sneakers and a light jacket. Stay warm and dry.
+2025-05-04 23:56:26,028 - INFO - Camera stopped
+2025-05-04 23:56:26,230 - INFO - Camera closed successfully.

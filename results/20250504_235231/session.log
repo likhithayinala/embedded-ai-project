@@ -1,0 +1,17 @@
+2025-05-04 23:52:31,019 - INFO - Session started. Results will be saved to: results/20250504_235231
+2025-05-04 23:52:34,710 - INFO - Training the keyword detection model...
+2025-05-04 23:52:40,307 - INFO - Spoken output delivered
+2025-05-04 23:53:10,137 - INFO - Spoken output delivered
+2025-05-04 23:53:12,320 - INFO - Processing audio with duration 00:02.000
+2025-05-04 23:53:17,065 - INFO - Detected language 'en' with probability 0.75
+2025-05-04 23:53:22,594 - INFO - Recognized Speech (offline):  New York.
+2025-05-04 23:53:22,595 - INFO - Recorded city: New York.
+2025-05-04 23:53:25,543 - INFO - Spoken output delivered
+2025-05-04 23:53:54,505 - INFO - Processing audio with duration 00:25.000
+2025-05-04 23:53:59,037 - INFO - Detected language 'en' with probability 0.95
+2025-05-04 23:54:21,816 - INFO - Recognized Speech (offline):  So I have a red shirt, a white shirt, black trousers, a 3-piece shirt, a brown blazer,  salmon shoes, Nike sneakers, high coats, a couple of sports shoes, shots to go with,  a couple of ball caps and my favorite black hoodie.  I also have a puffer jacket which I will not wear.
+2025-05-04 23:54:21,816 - INFO - Recorded wardrobe:  So I have a red shirt, a white shirt, black trousers, a 3-piece shirt, a brown blazer,  salmon shoes, Nike sneakers, high coats, a couple of sports shoes, shots to go with,  a couple of ball caps and my favorite black hoodie.  I also have a puffer jacket which I will not wear.
+2025-05-04 23:54:21,817 - INFO - User information saved to results/20250504_235231/user_info.json
+2025-05-04 23:54:21,853 - INFO - Listening for speech input...
+2025-05-04 23:54:24,101 - INFO - Started Listening to User's voice
+2025-05-04 23:54:26,786 - INFO - Spoken output delivered

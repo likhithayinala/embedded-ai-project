@@ -1,0 +1,32 @@
+2025-05-04 23:59:44,900 - INFO - Session started. Results will be saved to: results/20250504_235944
+2025-05-04 23:59:48,645 - INFO - Listening for speech input...
+2025-05-04 23:59:51,073 - INFO - Started Listening to User's voice
+2025-05-04 23:59:53,763 - INFO - Spoken output delivered
+2025-05-05 00:00:00,423 - INFO - Processing audio with duration 00:06.000
+2025-05-05 00:00:05,193 - INFO - Detected language 'en' with probability 0.93
+2025-05-05 00:00:14,294 - INFO - Recognized Speech (offline):  I will be going for a date night to a fine dining place I want some outfit recommendations
+2025-05-05 00:00:14,294 - INFO - Recognized Speech (offline):  I will be going for a date night to a fine dining place I want some outfit recommendations
+2025-05-05 00:00:17,756 - INFO - Spoken output delivered
+2025-05-05 00:00:19,944 - INFO - Processing audio with duration 00:02.000
+2025-05-05 00:00:24,477 - INFO - Detected language 'en' with probability 0.73
+2025-05-05 00:00:30,017 - INFO - Recognized Speech (offline):  Yes
+2025-05-05 00:00:30,017 - INFO - User agreed to take a picture.
+2025-05-05 00:00:30,037 - INFO - Initialization successful.
+2025-05-05 00:00:30,037 - INFO - Camera now open.
+2025-05-05 00:00:30,039 - INFO - Camera configuration has been adjusted!
+2025-05-05 00:00:30,039 - INFO - Configuration successful!
+2025-05-05 00:00:30,188 - INFO - Camera started
+2025-05-05 00:00:30,189 - INFO - Allowing camera to adjust...
+2025-05-05 00:00:31,191 - INFO - User image captured
+2025-05-05 00:00:31,283 - INFO - Detected 1 face(s) for blurring
+2025-05-05 00:00:31,297 - INFO - User image with blurred faces saved as results/20250504_235944/user_image_blurred.jpg
+2025-05-05 00:00:31,374 - INFO - Retrieved weather for New York: 17.3°C, moderate rain
+2025-05-05 00:00:31,375 - INFO - Opening image for Gemini API...
+2025-05-05 00:00:31,381 - INFO - Sending request to Gemini Vision API...
+2025-05-05 00:00:32,834 - INFO - Outfit Recommendation: For a fine dining date night in moderate rain, go with your blue pants and a stylish, well-fitting blue sweatshirt. This is appropriate for the weather. Elevate the look with clean, dark shoes to contrast with the pants.
+
+2025-05-05 00:00:32,834 - INFO - Final Recommendation: For a fine dining date night in moderate rain, go with your blue pants and a stylish, well-fitting blue sweatshirt. This is appropriate for the weather. Elevate the look with clean, dark shoes to contrast with the pants.
+
+2025-05-05 00:00:45,559 - INFO - Spoken output delivered
+2025-05-05 00:00:45,619 - INFO - Camera stopped
+2025-05-05 00:00:45,822 - INFO - Camera closed successfully.

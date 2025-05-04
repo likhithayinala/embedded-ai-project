@@ -1,0 +1,30 @@
+2025-05-05 00:04:27,394 - INFO - Session started. Results will be saved to: results/20250505_000427
+2025-05-05 00:04:31,163 - INFO - Listening for speech input...
+2025-05-05 00:04:33,610 - INFO - Started Listening to User's voice
+2025-05-05 00:04:36,305 - INFO - Spoken output delivered
+2025-05-05 00:04:42,995 - INFO - Processing audio with duration 00:06.000
+2025-05-05 00:04:47,706 - INFO - Detected language 'en' with probability 0.95
+2025-05-05 00:04:55,176 - INFO - Recognized Speech (offline):  I am going to spoil it, it's my outfit alright
+2025-05-05 00:04:55,176 - INFO - Recognized Speech (offline):  I am going to spoil it, it's my outfit alright
+2025-05-05 00:04:58,634 - INFO - Spoken output delivered
+2025-05-05 00:05:00,820 - INFO - Processing audio with duration 00:02.000
+2025-05-05 00:05:05,425 - INFO - Detected language 'en' with probability 0.67
+2025-05-05 00:05:10,887 - INFO - Recognized Speech (offline):  Yes
+2025-05-05 00:05:10,887 - INFO - User agreed to take a picture.
+2025-05-05 00:05:10,906 - INFO - Initialization successful.
+2025-05-05 00:05:10,907 - INFO - Camera now open.
+2025-05-05 00:05:10,909 - INFO - Camera configuration has been adjusted!
+2025-05-05 00:05:10,909 - INFO - Configuration successful!
+2025-05-05 00:05:11,061 - INFO - Camera started
+2025-05-05 00:05:11,061 - INFO - Allowing camera to adjust...
+2025-05-05 00:05:12,064 - INFO - User image captured
+2025-05-05 00:05:12,139 - INFO - Detected 0 face(s) for blurring
+2025-05-05 00:05:12,142 - INFO - User image with blurred faces saved as results/20250505_000427/user_image_blurred.jpg
+2025-05-05 00:05:12,277 - INFO - Retrieved weather for New York: 17.3°C, moderate rain
+2025-05-05 00:05:12,277 - INFO - Opening image for Gemini API...
+2025-05-05 00:05:12,284 - INFO - Sending request to Gemini Vision API...
+2025-05-05 00:05:13,792 - INFO - Outfit Recommendation: Given the moderate rain and 17.3°C, a comfortable and weather-appropriate outfit would be a blue sweatshirt paired with blue pants. This outfit provides warmth and is suitable for the rainy weather. Consider a waterproof jacket if you need added protection.
+2025-05-05 00:05:13,792 - INFO - Final Recommendation: Given the moderate rain and 17.3°C, a comfortable and weather-appropriate outfit would be a blue sweatshirt paired with blue pants. This outfit provides warmth and is suitable for the rainy weather. Consider a waterproof jacket if you need added protection.
+2025-05-05 00:05:29,436 - INFO - Spoken output delivered
+2025-05-05 00:05:29,491 - INFO - Camera stopped
+2025-05-05 00:05:29,694 - INFO - Camera closed successfully.

@@ -1,0 +1,11 @@
+2025-05-04 23:45:16,634 - INFO - Session started. Results will be saved to: results/20250504_234516
+2025-05-04 23:45:20,519 - INFO - Training the keyword detection model...
+2025-05-04 23:45:26,112 - INFO - Spoken output delivered
+2025-05-04 23:45:56,182 - INFO - Spoken output delivered
+2025-05-04 23:46:02,816 - INFO - Processing audio with duration 00:05.000
+2025-05-04 23:46:07,537 - INFO - Detected language 'en' with probability 0.75
+2025-05-04 23:46:13,233 - INFO - Recognized Speech (offline):  New York.
+2025-05-04 23:46:13,233 - INFO - Recorded city: New York.
+2025-05-04 23:46:16,180 - INFO - Spoken output delivered
+2025-05-04 23:46:27,301 - INFO - Processing audio with duration 00:10.000
+2025-05-04 23:46:31,897 - INFO - Detected language 'en' with probability 0.96
