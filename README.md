@@ -11,8 +11,7 @@ This project implements a smart mirror powered by Raspberry Pi that uses compute
 - **Text-to-Speech Output**: Delivers recommendations through voice responses
 
 ## Hardware Requirements
-- Raspberry Pi (4 recommended)
-- Display monitor with two-way mirror overlay
+- Raspberry Pi (5 recommended)
 - PiCamera module or USB webcam
 - Microphone (or ESP32 as audio recorder)
 - Speakers for audio output
@@ -59,7 +58,7 @@ This project implements a smart mirror powered by Raspberry Pi that uses compute
    - Ask for your location and wardrobe information
    - Listen for activation keywords
    - Capture and process your image (with privacy-preserving face blurring)
-   - Provide outfit recommendations based on your appearance and the weather
+   - Provide outfit recommendations based on your question, appearance and the weather
 
 ## Project Structure
 ```
